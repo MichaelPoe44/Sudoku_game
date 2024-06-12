@@ -10,7 +10,10 @@ public class Game {
         //         game.show();
         //     }
         // });
-        MainWindow game = new MainWindow();
+        
+       MainWindow game = new MainWindow();
+        
+        
         
 
     }

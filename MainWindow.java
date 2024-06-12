@@ -1,45 +1,36 @@
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.text.*;
+import java.awt.event.*;
 
 public class MainWindow extends JFrame implements ActionListener{
 
-    JFrame window;
-    JButton button1,button2,button3,button4,button5,button6,
-        button7,button8,button9;
-    JLabel label1, label2, label3,label4,label5,label6,label7;
-    JPanel mainPanel, subPanel1,subPanel2,subPanel3,subPanel4,subPanel5,
-        subPanel6, subPanel7,subPanel8,subPanel9;
+    JFrame window; 
+    JButton[] buttons = new JButton[9];
+    JPanel mainPanel;
+    JPanel[] subPanels = new JPanel[9];
+    JTextField[][] texts = new JTextField[9][9];
+    JTextField focusedBox;
+    JPanel subPanel;
 
-    //JTextField text1,text2,text3,text4,text5,text6,text7,
-        //text8,text9;
-    GridLayout grid;
     
-
-
     public MainWindow(){
+        //constructor
         
         makeWindow();
         makeButtons();
         makeLabels();
         window.setVisible(true);
+        Maker make = new Maker();
+        int[][] completedBoard = make.getBoard();
         
-
-
-
+        
+        
     }
-
+    
     private void makeWindow(){
+        //creates Window
         window = new JFrame("Sudoku");
         window.setDefaultCloseOperation(2);
         window.setSize(800,800);
@@ -48,73 +39,153 @@ public class MainWindow extends JFrame implements ActionListener{
     }
 
     private void makeButtons(){
-        button1 = new JButton("1");
-        button2 = new JButton("2");
-        button3 = new JButton("3");
-        button4 = new JButton("4");
-        button5 = new JButton("5");
-        button6 = new JButton("6");
-        button7 = new JButton("7");
-        button8 = new JButton("8");
-        button9 = new JButton("9");
-        JButton[] buttonsList = {button1,button2,button3,button4,
-            button5,button6,button7,button8,button9};
-        
-        for (int j=0, i=125; j< buttonsList.length;j++, i+=60){
-            buttonsList[j].setBounds(i,700,50,50);
-            buttonsList[j].addActionListener(this);
-            window.add(buttonsList[j]);
+        //creates buttons
+        for (int i=0, j=125; i < buttons.length; i++, j+=60){
+            buttons[i] = new JButton(String.format("%d",i+1));
+            buttons[i].setBounds(j,700,50,50);
+            buttons[i].addActionListener(this);
+            window.add(buttons[i]);
+
         }
+        
 
     }
 
     private void makeLabels(){
-        //grid = new GridLayout(4,4);
+        
 
         mainPanel = new JPanel(new GridLayout(3,3,5,5));
 
-        subPanel1 = new JPanel(new GridLayout(3,3));
-        subPanel2 = new JPanel(new GridLayout(3,3));
-        subPanel3 = new JPanel(new GridLayout(3,3));
-        subPanel4 = new JPanel(new GridLayout(3,3));
-        subPanel5 = new JPanel(new GridLayout(3,3));
-        subPanel6 = new JPanel(new GridLayout(3,3));
-        subPanel7 = new JPanel(new GridLayout(3,3));
-        subPanel8 = new JPanel(new GridLayout(3,3));
-        subPanel9 = new JPanel(new GridLayout(3,3));
-
-        JPanel[] panelsList = {subPanel1,subPanel2,subPanel3,subPanel4,subPanel5,
-            subPanel6, subPanel7,subPanel8,subPanel9};
         
-        for (JPanel panel : panelsList){
-            panel.setBorder(BorderFactory.createLineBorder(new Color(0,0,0),2));
+        for (int PanelRow=0; PanelRow < 3; PanelRow++){
+            for (int PanelColumn=0; PanelColumn < 3; PanelColumn++){
+                //int num = subPanelColumn + subPanelRow;
+                subPanel = new JPanel(new GridLayout(3,3));
+                subPanel.setBorder(BorderFactory.createLineBorder(new Color(0,0,0),2));
 
-            for (int j=0; j < 9; j++){
-                JTextField text = new JTextField();
-                text.setHorizontalAlignment(JTextField.CENTER);
-                //Dimension textFieldSize = new Dimension(50,50);
-                //text.setPreferredSize(textFieldSize);
-                panel.add(text);
+                for (int subRow=0; subRow < 3; subRow++){
+                    for (int subColumn=0; subColumn < 3; subColumn++){
+                        int row = (PanelRow * 3) + subRow;
+                        int column = (PanelColumn * 3) + subColumn;
+                        texts[row][column] = new JTextField();
+                        texts[row][column].setHorizontalAlignment(JTextField.CENTER);
+                        ///////////
+                        texts[row][column].setText(String.format("(%d,%d)", row,column));
+                        ////////////
+                        ((AbstractDocument) texts[row][column].getDocument()).setDocumentFilter(new DigitFilter());
+                        texts[row][column].addFocusListener(new FocusListener() {
+                            public void focusGained(FocusEvent e){
+                                focusedBox =  (JTextField) e.getSource();
+                            }
+                            public void focusLost(FocusEvent e){
+                                
+                            }
+                        
+                        });
+                        subPanel.add(texts[row][column]);
+
+                    }
+                }
+
+                mainPanel.add(subPanel);
 
             }
-        //Dimension subPanelSize = new Dimension(150,150);
-        //panel.setPreferredSize(subPanelSize);
-        mainPanel.add(panel);
-        }
 
+        }
         mainPanel.setBounds(90,70,600,600);
         window.add(mainPanel);
+    
+    }
+    //     for (int i=0; i < 9; i++){
+    //         subPanels[i] = new JPanel(new GridLayout(3,3));
+    //         subPanels[i].setBorder(BorderFactory.createLineBorder(new Color(0,0,0),2));
+
+    //         for (int j=0; j < 9; j++){
+                
+    //             texts[i][j] = new JTextField();
+    //             texts[i][j].setHorizontalAlignment(JTextField.CENTER);
 
 
+    //             //test
+                
+    //             int poo = 6;
+    //             int num;
+    //             if (j < 3){
+    //                 num = j + (i*3);
+    //             }
+    //             else if (3 <= j && j < 6) {
+    //                 num = poo+j+(i * 3);
+    //             }
+    //             else{
+    //                 num = (2*poo) + j + (i*3);
+    //             }
+
+    //             texts[i][j].setText(String.format("(%d,%d)", i,j));
+
+            
+    //             // end
+                
+    //             ((AbstractDocument) texts[i][j].getDocument()).setDocumentFilter(new DigitFilter());
+    //             texts[i][j].addFocusListener(new FocusListener() {
+    //                 public void focusGained(FocusEvent e){
+    //                     focusedBox =  (JTextField) e.getSource();
+    //                 }
+    //                 public void focusLost(FocusEvent e){
+                        
+    //                 }
+
+                    
+    //             });
+    //             subPanels[i].add(texts[i][j]);
+
+    //         }
+        
+    //         mainPanel.add(subPanels[i]);
+    //     }
+        
+
+    //     mainPanel.setBounds(90,70,600,600);
+    //     window.add(mainPanel);
+
+
+    // }
+
+    static class DigitFilter extends DocumentFilter {
+        private static final int MAX_LENGTH = 1;
+
+        
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+            if (string == null) {
+                return;
+            }
+
+            if ((fb.getDocument().getLength() + string.length()) <= MAX_LENGTH && string.matches("\\d")) {
+                super.insertString(fb, offset, string, attr);
+            }
+        }
+
+        
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            if (text == null) {
+                return;
+            }
+            if ((fb.getDocument().getLength() - length + text.length()) <= MAX_LENGTH && text.matches("\\d")) {
+                super.replace(fb, offset, length, text, attrs);
+            }
+        }
     }
 
 
 
     public void actionPerformed(ActionEvent e){
-       System.out.println(e.getActionCommand());
+        if (focusedBox!=null){
+            focusedBox.setText(e.getActionCommand());
+            focusedBox=null;
+        }
+        System.out.println(e.getActionCommand());
     }
 
-   
+
 
 
 }
