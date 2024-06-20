@@ -67,7 +67,7 @@ public class Maker {
     }
 
 
-/////////////////////////////////////////////////////////////
+    
 
     public int[][] getBoard(){
         return board;
